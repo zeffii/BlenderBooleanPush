@@ -1,3 +1,10 @@
+#
+#
+# This version of the script is the Minimal Viable Product, hairy as a jeti.
+# See the script in the addons_contrib folder of this repo for
+# development updates
+#
+
 # ##### BEGIN GPL LICENSE BLOCK #####
 #
 #  This program is free software; you can redistribute it and/or
