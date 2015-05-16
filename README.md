@@ -11,6 +11,7 @@ Yes, at the moment this is a massive kludge
 - not implemented view rotation passthrough (only zoom)
 - not implemented mouse x,y position as distance instead of sliders
 - not implemented multiface selection, join faces if not islands.. else gather face data separately
+- has a sverchok dependency (https://github.com/nortikin/sverchok/blob/master/utils/sv_bmesh_utils.py)
 
 This will depend on feedback, if noone uses it except me then it won't likely progress, but if there's feedback and perhaps contributions then who knows.
  
