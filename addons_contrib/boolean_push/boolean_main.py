@@ -96,6 +96,7 @@ def attache_boolean_modifier(obj_a, obj_b):
 
         a = obj_a.modifiers.new(type='BOOLEAN', name='sv_bool')
         a.operation = 'INTERSECT'
+        # a.operation = 'DIFFERENCE'
         if obj_b:
             a.object = obj_b
 
@@ -109,12 +110,36 @@ def draw_callback_px(self, context, res):
     # 50% alpha, 2 pixel width line
     bgl.glEnable(bgl.GL_BLEND)
     bgl.glLineWidth(context.scene.BGL_DEMO_PROP_THICKNESS)
-    bgl.glColor4f(0.8, 0.3, 0.9, 1.0)
+
+    color_to = (0.8, 0.3, 0.9, 1.0)
+    color_from = (0.6, 0.6, 0.9, 1.0)
+
+    # Destination
+    bgl.glColor4f(*color_to)
     bgl.glBegin(bgl.GL_LINE_LOOP)
     for vert in verts:
         co = fmatrix * (vert + (fnorm * scalar))
         bgl.glVertex3f(*co)
+    bgl.glEnd()
 
+    # Origin
+    bgl.glColor4f(*color_from)
+    bgl.glBegin(bgl.GL_LINE_LOOP)
+    for vert in verts:
+        co = fmatrix * vert
+        bgl.glVertex3f(*co)
+    bgl.glEnd()
+
+    # Trajectory
+    bgl.glBegin(bgl.GL_LINES)
+    for vert in verts:
+        co = fmatrix * vert
+        bgl.glColor4f(*color_from)
+        bgl.glVertex3f(*co)
+
+        co = fmatrix * (vert + (fnorm * scalar))
+        bgl.glColor4f(*color_to)
+        bgl.glVertex3f(*co)
     bgl.glEnd()
 
     # restore opengl defaults
