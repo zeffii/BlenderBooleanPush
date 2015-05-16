@@ -171,7 +171,7 @@ class ModalDrawOperator(bpy.types.Operator):
             bpy.ops.object.mode_set(mode='OBJECT')
 
             scn = context.scene
-            scn.BGL_OFFSET_SCALAR = 0.001
+            scn.BGL_OFFSET_SCALAR = -0.001
             scn.BGL_DEMO_PROP_THICKNESS = 5
             scn.BGL_FUDGE_FACTOR = True
 
