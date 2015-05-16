@@ -164,10 +164,10 @@ def remove_obj():
         meshes.remove(me)
 
 
-class ModalDrawOperator(bpy.types.Operator):
+class ModalBooleanPushOperator(bpy.types.Operator):
 
     bl_idname = "view3d.gl_bool_push"
-    bl_label = "Simple Modal View3D Operator"
+    bl_label = "SketchCarve (boolean push)"
 
     def modal(self, context, event):
         context.area.tag_redraw()
@@ -208,6 +208,17 @@ class ModalDrawOperator(bpy.types.Operator):
         print(event.type)
         # self.x = event.mouse_x
         # self.y = event.mouse_y
+        if event.type in {'LEFT_ARROW', 'RIGHT_ARROW'}:
+            n = event.type.split('_')[0]
+
+            mult = 8.0 if event.ctrl else 1.0
+
+            if n == 'RIGHT':
+                scn.BGL_OFFSET_SCALAR += (0.002 * mult)
+            else:
+                scn.BGL_OFFSET_SCALAR -= (0.002 * mult)
+
+            return {'RUNNING_MODAL'}
 
         scalar = scn.BGL_OFFSET_SCALAR
         VB, PB = generate_boolean_geom(self.verts, self.normal, scalar)
