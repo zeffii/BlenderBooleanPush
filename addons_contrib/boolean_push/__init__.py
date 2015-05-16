@@ -52,15 +52,14 @@ def register():
     Scene.BGL_OFFSET_SCALAR = bpy.props.FloatProperty(
         min=-5.0, max=5.0, default=0.0)
     Scene.BGL_FUDGE_FACTOR = bpy.props.FloatProperty(min=0.0, max=0.001, step=0.00001, default=0.0001)
-    # bpy.utils.register_class(HelloWorldPanel)
-    # bpy.utils.register_class(ModalDrawOperator)
+    Scene.BGL_OPERATOR_RUNNING = bpy.props.BoolProperty(default=False)
+
     bpy.utils.register_module(__name__)
 
 
 def unregister():
-    # bpy.utils.unregister_class(HelloWorldPanel)
-    # bpy.utils.unregister_class(ModalDrawOperator)
     bpy.utils.unregister_module(__name__)
     del Scene.BGL_OFFSET_SCALAR
     del Scene.BGL_DEMO_PROP_THICKNESS
     del Scene.BGL_FUDGE_FACTOR
+    del Scene.BGL_OPERATOR_RUNNING

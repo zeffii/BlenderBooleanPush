@@ -141,7 +141,7 @@ def remove_obj():
 
 class ModalDrawOperator(bpy.types.Operator):
 
-    bl_idname = "view3d.bgl_demo_modal_operator"
+    bl_idname = "view3d.gl_bool_push"
     bl_label = "Simple Modal View3D Operator"
 
     def modal(self, context, event):
@@ -162,19 +162,27 @@ class ModalDrawOperator(bpy.types.Operator):
 
             # cleanup object
             remove_obj()
+            scn.BGL_OPERATOR_RUNNING = False
             return {'CANCELLED'}
 
-        if event.type in {'RET'}:
+        if event.type in {'RET'} and event.ctrl:
             bpy.types.SpaceView3D.draw_handler_remove(self._handle, 'WINDOW')
             bpy.ops.object.mode_set(mode='OBJECT')
             bpy.ops.object.modifier_apply(apply_as='DATA', modifier="sv_bool")
             context.active_object.show_wire = False
             context.active_object.show_all_edges = False
             bpy.ops.object.mode_set(mode='EDIT')
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.remove_doubles(threshold=0.0001)
+            bpy.ops.mesh.select_all(action='DESELECT')
+
             remove_obj()
+            scn.BGL_OPERATOR_RUNNING = False
             return {'FINISHED'}
 
         print(event.type)
+        # self.x = event.mouse_x
+        # self.y = event.mouse_y
 
         scalar = scn.BGL_OFFSET_SCALAR
         VB, PB = generate_boolean_geom(self.verts, self.normal, scalar)
@@ -197,6 +205,7 @@ class ModalDrawOperator(bpy.types.Operator):
             scn.BGL_OFFSET_SCALAR = -0.001
             scn.BGL_DEMO_PROP_THICKNESS = 5
             scn.BGL_FUDGE_FACTOR = True
+            scn.BGL_OPERATOR_RUNNING = True
 
             res = generate_draw_geometry(self, context)
             self.verts = res[0]
@@ -224,17 +233,17 @@ class ModalDrawOperator(bpy.types.Operator):
 
 class HelloWorldPanel(bpy.types.Panel):
 
-    """Creates a Panel in the Object properties window"""
-    bl_label = "Hello World Panel"
-    bl_idname = "OBJECT_PT_hello"
+    bl_label = "Boolean Push Properties"
+    bl_idname = "OBJECT_PT_BOOLPUSH"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    # bl_context = "object"
 
     def draw(self, context):
         layout = self.layout
         col = layout.column()
-        col.prop(context.scene, 'BGL_DEMO_PROP_THICKNESS', text='thickness')
-        col.prop(context.scene, 'BGL_OFFSET_SCALAR', text='amount')
-        col.prop(context.scene, 'BGL_FUDGE_FACTOR', text='fudge')
-        col.operator("view3d.bgl_demo_modal_operator")
+        col.operator("view3d.gl_bool_push")
+
+        if context.scene.BGL_OPERATOR_RUNNING:
+            col.prop(context.scene, 'BGL_DEMO_PROP_THICKNESS', text='thickness')
+            col.prop(context.scene, 'BGL_OFFSET_SCALAR', text='amount')
+            col.prop(context.scene, 'BGL_FUDGE_FACTOR', text='fudge')
