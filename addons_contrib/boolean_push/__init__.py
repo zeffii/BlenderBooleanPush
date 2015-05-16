@@ -36,11 +36,13 @@ if 'bpy' in globals():
     if 'boolean_main' in globals():
         import imp
         imp.reload(boolean_main)
+        imp.reload(bmesh_extras)
         print('{0}: reloaded.'.format(__package__))
 
 else:
     import bpy
     from . import boolean_main
+    from . import bmesh_extras
 
 Scene = bpy.types.Scene
 

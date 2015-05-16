@@ -7,11 +7,8 @@ import bmesh
 from mathutils import Vector, Matrix
 from collections import defaultdict
 
-# from sverchok.utils import sv_bmesh_utils
-
-from .bmesh_utils import (
-    pydata_from_bmesh,
-    bmesh_from_pydata
+from .bmesh_extras import (
+    pydata_from_bmesh, bmesh_from_pydata
 )
 
 
@@ -126,6 +123,22 @@ def draw_callback_px(self, context, res):
     bgl.glColor4f(0.0, 0.0, 0.0, 1.0)
 
 
+def remove_obj():
+    obj_name, mesh_name = "ExtractObject", "Extract_mesh"
+    scene = bpy.context.scene
+    objs = bpy.data.objects
+    meshes = bpy.data.meshes
+
+    obj = objs.get('ExtractObject')
+    if obj:
+        scene.objects.unlink(obj)
+        objs.remove(obj)
+
+    me = meshes.get('Extract_mesh')
+    if me:
+        meshes.remove(me)
+
+
 class ModalDrawOperator(bpy.types.Operator):
 
     bl_idname = "view3d.bgl_demo_modal_operator"
@@ -135,11 +148,20 @@ class ModalDrawOperator(bpy.types.Operator):
         context.area.tag_redraw()
         scn = context.scene
 
-        if event.type in {'MIDDLEMOUSE'}:
-            return {'RUNNING_MODAL'}
+        # if event.type in {'MIDDLEMOUSE'}:
+        #     return {'RUNNING_MODAL'}
 
         if event.type in {'RIGHTMOUSE', 'ESC'}:
             bpy.types.SpaceView3D.draw_handler_remove(self._handle, 'WINDOW')
+            obj = context.active_object
+
+            # cleanup modifier
+            sk = obj.modifiers.get('sv_bool')
+            if sk:
+                obj.modifiers.remove(sk)
+
+            # cleanup object
+            remove_obj()
             return {'CANCELLED'}
 
         if event.type in {'RET'}:
@@ -149,7 +171,10 @@ class ModalDrawOperator(bpy.types.Operator):
             context.active_object.show_wire = False
             context.active_object.show_all_edges = False
             bpy.ops.object.mode_set(mode='EDIT')
+            remove_obj()
             return {'FINISHED'}
+
+        print(event.type)
 
         scalar = scn.BGL_OFFSET_SCALAR
         VB, PB = generate_boolean_geom(self.verts, self.normal, scalar)
